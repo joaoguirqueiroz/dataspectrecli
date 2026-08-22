@@ -31,7 +31,7 @@ def test_setup_service_full_check_generates_reports(runtime_root):
             return completed("Nmap version 7.95")
         if command == ["nuclei", "-version"]:
             return completed("nuclei v3.3.0")
-        if command[1:] == ["main.py", "--version"]:
+        if command[1:] == ["dataspectre.py", "--version"]:
             return completed("sentinelscan 1.0.0")
         return completed()
 
@@ -39,6 +39,7 @@ def test_setup_service_full_check_generates_reports(runtime_root):
         return f"/usr/bin/{binary}" if binary in {"apt", "git", "nmap", "nuclei"} else None
 
     (runtime_root / "tests").mkdir(exist_ok=True)
+    (runtime_root / "dataspectre.py").write_text("print('dataspectre')\n", encoding="utf-8")
     (runtime_root / "main.py").write_text("print('sentinelscan')\n", encoding="utf-8")
     (runtime_root / "README.md").write_text("# SentinelScan\n", encoding="utf-8")
     (runtime_root / "CHANGELOG.md").write_text("# Changelog\n", encoding="utf-8")
@@ -64,7 +65,7 @@ def test_setup_service_reports_missing_scanner_tools(runtime_root):
             return completed("No broken requirements found.")
         if command == ["git", "--version"]:
             return completed("git version 2.45.0")
-        if command[1:] == ["main.py", "--version"]:
+        if command[1:] == ["dataspectre.py", "--version"]:
             return completed("sentinelscan 1.0.0")
         return completed()
 

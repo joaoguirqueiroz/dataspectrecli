@@ -13,4 +13,4 @@ if (( $# == 0 )); then
   set -- interactive
 fi
 
-exec "$VENV_BIN" "$ROOT_DIR/main.py" --root "$ROOT_DIR" "$@"
+exec "$VENV_BIN" "$ROOT_DIR/dataspectre.py" --root "$ROOT_DIR" "$@"

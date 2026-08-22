@@ -80,6 +80,7 @@ class SetupService:
     """Checks local prerequisites and writes setup reports."""
 
     REQUIRED_FILES = (
+        "dataspectre.py",
         "main.py",
         "README.md",
         "CHANGELOG.md",
@@ -306,21 +307,21 @@ class SetupService:
         return SetupCheck("Arquivos obrigatorios", STATUS_OK, "presentes", "Arquivos essenciais encontrados.")
 
     def check_application_entrypoint(self) -> SetupCheck:
-        if not (self.root_path / "main.py").exists():
+        if not (self.root_path / "dataspectre.py").exists():
             return SetupCheck(
                 "Execucao da aplicacao",
                 STATUS_ERROR,
-                detail="main.py nao encontrado.",
-                action="Restaure o ponto de entrada main.py.",
+                detail="dataspectre.py nao encontrado.",
+                action="Restaure o ponto de entrada dataspectre.py.",
             )
-        result = self._run([sys.executable, "main.py", "--version"], timeout=20, cwd=self.root_path)
+        result = self._run([sys.executable, "dataspectre.py", "--version"], timeout=20, cwd=self.root_path)
         if result.return_code == 0:
             version = (result.stdout or "").strip() or "ok"
             return SetupCheck("Execucao da aplicacao", STATUS_OK, version, "Entrada principal responde.")
         return SetupCheck(
             "Execucao da aplicacao",
             STATUS_ERROR,
-            detail=(result.stderr or result.stdout or "Falha ao executar main.py --version.").strip(),
+            detail=(result.stderr or result.stdout or "Falha ao executar dataspectre.py --version.").strip(),
             action="Revise imports e dependencias antes de abrir a CLI.",
         )
 

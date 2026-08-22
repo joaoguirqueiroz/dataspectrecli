@@ -638,10 +638,12 @@ def _interactive_nmap(context: Any, renderer: TerminalRenderer) -> None:
             "Informe somente um ativo, uma rede privada ou um laboratorio sob sua autorizacao.",
             "Alvo aceito: IP (192.168.1.10), hostname (servidor.interno) ou CIDR privado (192.168.1.0/24).",
             "Perfis: rapida, servicos, scripts-padrao, servicos-scripts, portas e custom.",
-            "Sem Nmap instalado, a simulacao gera dados identificados como ficticios.",
+            "Para uma analise real, o binario Nmap precisa estar instalado.",
+            "A simulacao so e usada se voce confirmar essa opcao no proximo passo.",
         ],
         style="cyan",
     )
+    _print_scanner_availability(context, renderer, ("nmap",))
     target = _required_input(
         "Alvo autorizado (IP, hostname ou CIDR privado): ",
         "O alvo e obrigatorio. Informe o endereco do ativo autorizado.",
@@ -652,7 +654,7 @@ def _interactive_nmap(context: Any, renderer: TerminalRenderer) -> None:
     extra = "nao"
     if profile.lower() in {"custom", "personalizado"}:
         extra = input("Confirmacao extra para perfil personalizado? [sim/nao]: ").strip()
-    simulate = input("Simular se Nmap estiver ausente? [sim]: ").strip() or "sim"
+    simulate = input("Se Nmap estiver ausente, usar simulacao identificada? [sim/nao] [nao]: ").strip() or "nao"
     result = context.module_manager.execute(
         "nmap_scan",
         ModuleExecutionContext(
@@ -678,10 +680,12 @@ def _interactive_nuclei(context: Any, renderer: TerminalRenderer) -> None:
             "Alvo aceito: https://app.interna, http://127.0.0.1 ou portal.interno.",
             "Perfis: basic, medium-high, high, critical, template, custom.",
             "Perfis high/critical/template/custom exigem confirmacao extra.",
-            "Sem Nuclei instalado, a simulacao gera dados identificados como ficticios.",
+            "Para uma auditoria real, o binario Nuclei precisa estar instalado.",
+            "A simulacao so e usada se voce confirmar essa opcao no proximo passo.",
         ],
         style="cyan",
     )
+    _print_scanner_availability(context, renderer, ("nuclei",))
     targets = _required_input(
         "Alvo(s) web autorizados, separados por virgula: ",
         "Informe pelo menos uma URL ou hostname autorizado.",
@@ -692,7 +696,7 @@ def _interactive_nuclei(context: Any, renderer: TerminalRenderer) -> None:
     extra = "nao"
     if profile.lower() in {"high", "alta", "critical", "critica", "template", "template-especifico", "custom", "personalizado"}:
         extra = input("Confirmacao extra para perfil avancado/personalizado? [sim/nao]: ").strip()
-    simulate = input("Simular se Nuclei estiver ausente? [sim]: ").strip() or "sim"
+    simulate = input("Se Nuclei estiver ausente, usar simulacao identificada? [sim/nao] [nao]: ").strip() or "nao"
     result = context.module_manager.execute(
         "nuclei_scan",
         ModuleExecutionContext(
@@ -719,10 +723,12 @@ def _interactive_smart(context: Any, renderer: TerminalRenderer) -> None:
             "Alvo aceito: IP, hostname ou CIDR privado. Exemplos: 127.0.0.1, servidor.interno, 192.168.1.0/24.",
             "Perfis: basic, intermediate, advanced e custom.",
             "Perfis advanced/custom exigem confirmacao extra.",
-            "A simulacao mantem o fluxo demonstravel quando Nmap ou Nuclei nao estiverem instalados.",
+            "Para uma varredura real, instale Nmap; Nuclei so roda em endpoints web detectados.",
+            "A simulacao so e usada se voce confirmar essa opcao no proximo passo.",
         ],
         style="green",
     )
+    _print_scanner_availability(context, renderer, ("nmap", "nuclei"))
     targets = _required_input(
         "Alvo(s) autorizados, separados por virgula: ",
         "Informe pelo menos um ativo autorizado.",
@@ -732,7 +738,7 @@ def _interactive_smart(context: Any, renderer: TerminalRenderer) -> None:
     extra = "nao"
     if profile.lower() in {"advanced", "avancado", "custom", "personalizado"}:
         extra = input("Confirmacao extra para perfil avancado/personalizado? [sim/nao]: ").strip()
-    simulate = input("Simular se Nmap/Nuclei estiverem ausentes? [sim]: ").strip() or "sim"
+    simulate = input("Se uma ferramenta estiver ausente, usar simulacao identificada? [sim/nao] [nao]: ").strip() or "nao"
     result = context.module_manager.execute(
         "smart_scan",
         ModuleExecutionContext(
@@ -747,6 +753,29 @@ def _interactive_smart(context: Any, renderer: TerminalRenderer) -> None:
         ),
     )
     renderer.print_smart_scan_result(result.to_dict())
+
+
+def _print_scanner_availability(context: Any, renderer: TerminalRenderer, binaries: tuple[str, ...]) -> None:
+    """Show whether an interactive scan will use a real local scanner binary."""
+    scanner = context.scanner_service
+    available = [binary for binary in binaries if scanner and scanner.is_installed(binary)]
+    missing = [binary for binary in binaries if binary not in available]
+    if not missing:
+        renderer.print_panel(
+            "Modo de execucao",
+            [f"{', '.join(binary.title() for binary in available)} detectado(s): a execucao usara a ferramenta real."],
+            style="green",
+        )
+        return
+    renderer.print_panel(
+        "Modo de execucao",
+        [
+            f"Ausente: {', '.join(binary.title() for binary in missing)}.",
+            "Para instalar, abra Menu 9 > 3 (Instalador assistido) ou execute: python3 dataspectre.py setup wizard --install.",
+            "Sem instalacao, escolha 'sim' apenas se quiser dados ficticios claramente marcados.",
+        ],
+        style="yellow",
+    )
 
 
 def _interactive_inventory(context: Any, renderer: TerminalRenderer) -> None:

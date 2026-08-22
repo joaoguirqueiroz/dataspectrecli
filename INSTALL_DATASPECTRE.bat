@@ -28,7 +28,7 @@ if errorlevel 1 goto :fail
 if errorlevel 1 goto :fail
 
 echo [4/4] Validando o DataSpectre...
-".venv\Scripts\python.exe" main.py status
+".venv\Scripts\python.exe" dataspectre.py status
 if errorlevel 1 goto :fail
 
 echo.

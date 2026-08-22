@@ -42,7 +42,7 @@ class TerminalRenderer:
             [
                 self.logo(),
                 f"[ {APP_NAME} // v{APP_VERSION} ]",
-                "[ COMANDO: dataspectre help ]",
+                "[ COMANDO: python3 dataspectre.py help ]",
             ]
         )
 
@@ -132,29 +132,29 @@ class TerminalRenderer:
                     "Navegar: digite o numero da opcao no menu interativo e pressione Enter.",
                     "Voltar ou sair: use 0 no menu interativo.",
                     "Cancelar: Ctrl+C interrompe a acao atual com seguranca.",
-                    "Listar modulos: dataspectre modules list.",
-                    "Nmap autorizado: dataspectre scan nmap <alvo> --authorize.",
-                    "Nuclei autorizado: dataspectre scan nuclei <alvo> --authorize.",
-                    "Smart Scan: dataspectre scan smart <alvo> --authorize.",
-                    "Baseline: dataspectre baseline create nome --data resultado.json.",
-                    "Setup: dataspectre setup check ou dataspectre setup wizard.",
+                    "Listar modulos: python3 dataspectre.py modules list.",
+                    "Nmap autorizado: python3 dataspectre.py scan nmap <alvo> --authorize.",
+                    "Nuclei autorizado: python3 dataspectre.py scan nuclei <alvo> --authorize.",
+                    "Smart Scan: python3 dataspectre.py scan smart <alvo> --authorize.",
+                    "Baseline: python3 dataspectre.py baseline create nome --data resultado.json.",
+                    "Setup: python3 dataspectre.py setup check ou setup wizard --install.",
                     "Relatorios: reports/<projeto>/<ano>/<mes>/<dia>/<sessao>/<ferramenta>.",
                     "Formatos: markdown, txt, json, csv e html.",
-                    "Compatibilidade: python main.py <comando> continua funcionando.",
+                    "Atalho opcional: dataspectre <comando> e ./START_DATASPECTRE.sh <comando>.",
                 ],
             )
         )
         commands = [
-            {"command": "dataspectre status", "purpose": "Ver saude do sistema"},
-            {"command": "dataspectre interactive", "purpose": "Abrir console guiado"},
-            {"command": "dataspectre modules list", "purpose": "Listar modulos"},
-            {"command": "dataspectre scan nmap 127.0.0.1 --authorize", "purpose": "Nmap autorizado"},
-            {"command": "dataspectre scan nuclei http://localhost --authorize", "purpose": "Nuclei autorizado"},
-            {"command": "dataspectre scan smart 127.0.0.1 --authorize", "purpose": "Correlacionar Nmap/Nuclei"},
-            {"command": "dataspectre baseline compare base --data resultado.json", "purpose": "Comparar exposicao"},
-            {"command": "dataspectre setup check", "purpose": "Verificar ambiente"},
-            {"command": "dataspectre reports list", "purpose": "Listar relatorios"},
-            {"command": "dataspectre maintenance clean-temp", "purpose": "Simular limpeza"},
+            {"command": "python3 dataspectre.py status", "purpose": "Ver saude do sistema"},
+            {"command": "python3 dataspectre.py interactive", "purpose": "Abrir console guiado"},
+            {"command": "python3 dataspectre.py modules list", "purpose": "Listar modulos"},
+            {"command": "python3 dataspectre.py scan nmap 127.0.0.1 --authorize", "purpose": "Nmap autorizado"},
+            {"command": "python3 dataspectre.py scan nuclei http://localhost --authorize", "purpose": "Nuclei autorizado"},
+            {"command": "python3 dataspectre.py scan smart 127.0.0.1 --authorize", "purpose": "Correlacionar Nmap/Nuclei"},
+            {"command": "python3 dataspectre.py baseline compare base --data resultado.json", "purpose": "Comparar exposicao"},
+            {"command": "python3 dataspectre.py setup check", "purpose": "Verificar ambiente"},
+            {"command": "python3 dataspectre.py reports list", "purpose": "Listar relatorios"},
+            {"command": "python3 dataspectre.py maintenance clean-temp", "purpose": "Simular limpeza"},
         ]
         self.print_table(commands, ["command", "purpose"])
 

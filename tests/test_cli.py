@@ -480,7 +480,7 @@ def test_cli_interactive_menu_hides_removed_osint_workflow(runtime_root, capsys,
 
 
 def test_cli_interactive_nmap_explains_authorized_target_and_simulates(runtime_root, capsys, monkeypatch):
-    choices = iter(["1", "127.0.0.1", "", "", "sim", "", "0"])
+    choices = iter(["1", "127.0.0.1", "", "", "sim", "sim", "0"])
     monkeypatch.setattr("builtins.input", lambda _: next(choices))
     monkeypatch.setattr(
         "services.scanner_service.ScannerService.is_installed",

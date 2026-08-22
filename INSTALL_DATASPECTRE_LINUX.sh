@@ -105,6 +105,7 @@ printf '  Ajuda:        %s\n' "dataspectre help"
 printf '  Status:       %s\n' "dataspectre status"
 printf '  Setup/check:  %s\n' "dataspectre setup check"
 printf '  Alternativa:  %s\n' "./START_DATASPECTRE.sh"
+printf '  Python direto: %s\n' "python3 dataspectre.py"
 
 case ":${PATH}:" in
   *":${BIN_DIR}:"*) ;;

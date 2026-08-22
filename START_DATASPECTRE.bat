@@ -5,9 +5,9 @@ cd /d "%~dp0"
 title DataSpectre CLI
 
 if exist ".venv\Scripts\python.exe" (
-  ".venv\Scripts\python.exe" main.py interactive
+  ".venv\Scripts\python.exe" dataspectre.py interactive
 ) else (
-  python main.py interactive
+  python dataspectre.py interactive
 )
 set "EXIT_CODE=%errorlevel%"
 

@@ -2,6 +2,18 @@
 
 Todas as mudancas relevantes do DataSpectre CLI serao registradas neste arquivo.
 
+## [2.0.3] - 2026-08-22
+
+### Adicionado
+
+- `dataspectre.py` como ponto de entrada principal para executar com `python3 dataspectre.py`.
+
+### Alterado
+
+- O menu agora informa se Nmap e Nuclei estao instalados antes de iniciar uma auditoria.
+- A simulacao nao e mais ativada por padrao no modo interativo; e necessario confirma-la explicitamente.
+- O atalho Linux e a verificacao de instalacao agora usam `dataspectre.py`.
+
 ## [2.0.2] - 2026-08-22
 
 ### Melhorado

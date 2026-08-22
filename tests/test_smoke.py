@@ -14,6 +14,12 @@ def test_entrypoint_module_exports_cli_main():
     assert entrypoint.main is main
 
 
+def test_dataspectre_entrypoint_module_exports_cli_main():
+    import dataspectre as entrypoint
+
+    assert entrypoint.main is main
+
+
 def test_smoke_status_modules_plugins_and_reports(runtime_root, capsys):
     assert main(["--root", str(runtime_root), "status"]) == 0
     assert main(["--root", str(runtime_root), "modules", "list"]) == 0
@@ -39,6 +45,15 @@ def test_main_entrypoint_exits_with_cli_status(runtime_root, monkeypatch):
 
     with pytest.raises(SystemExit) as exc:
         runpy.run_path("main.py", run_name="__main__")
+
+    assert exc.value.code == 0
+
+
+def test_dataspectre_entrypoint_exits_with_cli_status(runtime_root, monkeypatch):
+    monkeypatch.setattr("sys.argv", ["dataspectre.py", "--root", str(runtime_root), "status"])
+
+    with pytest.raises(SystemExit) as exc:
+        runpy.run_path("dataspectre.py", run_name="__main__")
 
     assert exc.value.code == 0
 
