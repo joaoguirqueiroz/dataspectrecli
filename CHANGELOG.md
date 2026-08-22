@@ -2,6 +2,12 @@
 
 Todas as mudancas relevantes do DataSpectre CLI serao registradas neste arquivo.
 
+## [2.0.4] - 2026-08-22
+
+### Alterado
+
+- O desenho da logo foi removido do terminal e substituido pelo nome compacto `DATASPECTRECLI`.
+
 ## [2.0.3] - 2026-08-22
 
 ### Adicionado

@@ -10,7 +10,7 @@ from typing import Any
 
 from cli.messages import colorize, info
 from cli.tables import format_table
-from core.constants import APP_NAME, APP_VERSION
+from core.constants import APP_VERSION
 from services.scanner_service import ETHICAL_NOTICE
 
 try:  # pragma: no cover - depends on terminal/runtime.
@@ -40,8 +40,8 @@ class TerminalRenderer:
     def banner(self) -> str:
         return "\n".join(
             [
-                self.logo(),
-                f"[ {APP_NAME} // v{APP_VERSION} ]",
+                self.brand(),
+                f"[ v{APP_VERSION} ]",
                 "[ COMANDO: python3 dataspectre.py help ]",
             ]
         )
@@ -49,22 +49,9 @@ class TerminalRenderer:
     def print_banner(self) -> None:
         print(colorize(self.banner(), "green"))
 
-    def logo(self) -> str:
-        """Render the compact dotted DataSpectre shield for text terminals."""
-        if self.width < 56:
-            return " .:#:.\n[ DATASPECTRE ]"
-        return (
-            "          .:^^^^:.\n"
-            "      .:'##/\\##':.\n"
-            "   .:'##/....\\##':.\n"
-            "  |#  / .--. \\  #|\n"
-            "  |# | <o>   | #|\n"
-            "  |# | /__\\  | #|\n"
-            "   \\# \\::::/ #/\n"
-            "    \\# '::' #/\n"
-            "     \\#____#/\n"
-            "      \\____/"
-        )
+    def brand(self) -> str:
+        """Return the compact terminal brand without decorative artwork."""
+        return "DATASPECTRECLI"
 
     def print_json(self, payload: Any) -> None:
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
@@ -102,8 +89,8 @@ class TerminalRenderer:
         ]
         return "\n".join(
             [
-                self.logo(),
-                f"[ {APP_NAME} // v{APP_VERSION} ]",
+                self.brand(),
+                f"[ v{APP_VERSION} ]",
                 self.metric_badges(summary),
             ]
         )

@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 APP_NAME = "DataSpectre CLI"
-APP_VERSION = "2.0.3"
+APP_VERSION = "2.0.4"
 APP_AUTHOR = "DataSpectre"
 APP_COMMAND = "dataspectre"
 MIN_PYTHON_VERSION = (3, 10)

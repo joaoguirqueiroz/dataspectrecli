@@ -22,7 +22,7 @@ def test_cli_status_initializes_application(runtime_root, capsys):
     exit_code, captured = run_cli(capsys, runtime_root, "status")
 
     assert exit_code == 0
-    assert "DataSpectre CLI" in captured.out
+    assert "DATASPECTRECLI" in captured.out
     assert "MODULOS:" in captured.out
     assert "SISTEMA:" in captured.out
 

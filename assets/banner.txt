@@ -1,2 +1,1 @@
-DATASPECTRE // TERMINAL
-Defensive intelligence and authorized security auditing workflows.
+DATASPECTRECLI

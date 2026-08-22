@@ -75,7 +75,7 @@ def test_terminal_renderer_modules_empty_message(capsys):
     assert "Nenhum modulo carregado" in captured.out
 
 
-def test_dashboard_banner_uses_dotted_logo_and_inline_metrics():
+def test_dashboard_banner_uses_brand_name_and_inline_metrics():
     renderer = TerminalRenderer(width=118)
     banner = renderer.dashboard_banner(
         {
@@ -88,7 +88,8 @@ def test_dashboard_banner_uses_dotted_logo_and_inline_metrics():
         }
     )
 
-    assert ".:'##/" in banner
+    assert "DATASPECTRECLI" in banner
+    assert ".:'##/" not in banner
     assert "[ SISTEMA: Linux ] [ PYTHON: 3.13 ]" in banner
     assert "[ MODULOS: 6 ] [ PLUGINS: 1 ] [ PROJETOS: 0 ] [ IP LOCAL: 10.0.2.15 ]" in banner
 
