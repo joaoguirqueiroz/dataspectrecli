@@ -374,19 +374,18 @@ def _interactive(
             renderer.panel(
                 "DATASPECTRE // MAIN MENU",
                 [
-                    "1. Network Recon Autorizado (Nmap)",
-                    "2. Web Vulnerability Audit (Nuclei)",
-                    "3. Smart Scan Correlacionado",
-                    "4. Inventario de Ativos",
-                    "5. System Health",
-                    "6. Report Center",
-                    "7. Resumo de Projetos",
-                    "8. OSINT Tecnico (fluxo passivo)",
-                    "9. Historico de Operacoes",
-                    "10. Configuracoes e Setup",
-                    "11. Modulos Carregados",
-                    "12. Ajuda",
-                    "13. Limpeza Segura de Temporarios",
+                    "1. Analise de rede autorizada (Nmap)",
+                    "2. Auditoria web autorizada (Nuclei)",
+                    "3. Smart Scan correlacionado",
+                    "4. Inventario de ativos",
+                    "5. Diagnostico local do sistema",
+                    "6. Central de relatorios",
+                    "7. Resumo de projetos",
+                    "8. Historico de operacoes",
+                    "9. Configuracoes e instalacao",
+                    "10. Modulos disponiveis",
+                    "11. Ajuda de uso",
+                    "12. Limpeza segura de temporarios",
                     "0. Sair",
                 ],
             )
@@ -414,16 +413,30 @@ def _interactive(
         elif choice == "7":
             _interactive_project_summary(context, renderer)
         elif choice == "8":
-            _guided_security_workflow(context, renderer, "OSINT Tecnico")
-        elif choice == "9":
+            renderer.print_panel(
+                "Historico de operacoes",
+                [
+                    "Exibe as ultimas acoes registradas nesta instalacao.",
+                    "Nao executa scans, nao altera dados e nao envia informacoes para fora.",
+                ],
+                style="cyan",
+            )
             renderer.print_history(context.history_service.read_recent(20))
-        elif choice == "10":
+        elif choice == "9":
             _interactive_settings(context, renderer)
-        elif choice == "11":
+        elif choice == "10":
+            renderer.print_panel(
+                "Modulos disponiveis",
+                [
+                    "Mostra os modulos carregados, a categoria e o estado atual de cada um.",
+                    "Use esta tela para confirmar o que esta pronto antes de iniciar uma operacao.",
+                ],
+                style="cyan",
+            )
             renderer.print_modules(context.module_manager.list_modules())
-        elif choice == "12":
+        elif choice == "11":
             renderer.print_help()
-        elif choice == "13":
+        elif choice == "12":
             _interactive_cleanup(context, renderer)
         elif choice.lower() == "status":
             renderer.print_dashboard(application.status())
@@ -437,61 +450,31 @@ def _interactive(
         else:
             print(warning("Opcao invalida. Digite 12 para abrir a ajuda."))
 
-def _guided_security_workflow(context: Any, renderer: TerminalRenderer, name: str) -> None:
-    guidance = {
-        "API Security Audit": [
-            "Fluxo seguro para planejar auditoria de APIs autorizadas.",
-            "Valide escopo, ambiente, autenticacao permitida, rate limit e janela autorizada.",
-            "Use Nuclei apenas com autorizacao e templates/tags controlados.",
-        ],
-        "SSL/TLS Inspector": [
-            "Fluxo seguro para revisar postura TLS sem scripts intrusivos.",
-            "Registre hostname, portas esperadas, validade de certificados e protocolos permitidos.",
-            "Use ferramentas externas apenas contra ativos autorizados.",
-        ],
-        "CVE Intelligence": [
-            "Fluxo defensivo para correlacionar servico, produto e versao com risco conhecido.",
-            "Use os dados de Nmap/smart scan como inventario e confirme manualmente CVEs relevantes.",
-            "Priorize sistemas expostos, versoes antigas e achados com evidencia.",
-        ],
-        "Linux Hardening Audit": [
-            "Fluxo local e defensivo para revisar configuracoes do host autorizado.",
-            "Verifique atualizacoes, usuarios, servicos habilitados, logs, firewall e permissoes.",
-            "Nenhuma acao destrutiva e executada automaticamente.",
-        ],
-        "Log Threat Analyzer": [
-            "Fluxo defensivo para revisar logs da propria aplicacao DataSpectre.",
-            "Use logs/audit para rastreabilidade de execucoes, erros e cancelamentos.",
-            "Dados sensiveis nao devem ser registrados.",
-        ],
-        "OSINT Tecnico": [
-            "Fluxo passivo para organizar evidencias tecnicas fornecidas pelo usuario.",
-            "Nao executa coleta externa automatica nem acessa terceiros.",
-            "Registre dominios autorizados, proprietario, fonte e objetivo da analise.",
-        ],
-        "Scan Profile Manager": [
-            "Perfis ativos: basic, intermediate, advanced e custom.",
-            "Avancado/custom exigem confirmacao extra e continuam sem evasao ou exploracao.",
-            "A configuracao pode ser ajustada em config/dataspectre.yaml.",
-        ],
-    }
-    renderer.print_panel(
-        name,
-        guidance.get(name, ["Fluxo guiado seguro disponivel."]),
-        style="yellow",
-    )
-    context.history_service.record_action(
-        f"interactive.{name.lower().replace(' ', '_')}",
-        result="guided",
-        details={"status": "guided_security_workflow"},
-    )
+def _required_input(prompt: str, guidance: str) -> str:
+    """Read mandatory interactive input without sending empty data to a module."""
+    while True:
+        try:
+            value = input(prompt).strip()
+        except EOFError as exc:
+            raise KeyboardInterrupt from exc
+        if value:
+            return value
+        print(warning(guidance))
 
 
 def _interactive_reports(context: Any, renderer: TerminalRenderer) -> None:
+    renderer.print_panel(
+        "Central de relatorios",
+        [
+            "Consulte relatorios ja salvos ou crie um resumo manual a partir de dados JSON.",
+            "O titulo identifica o arquivo. Os dados devem ser um objeto JSON, por exemplo: {\"status\":\"ok\"}.",
+        ],
+        style="cyan",
+    )
     while True:
         print(
             renderer.panel(
-                "Report Center",
+                "CENTRAL DE RELATORIOS",
                 [
                     "1. Listar relatorios",
                     "2. Gerar relatorio manual",
@@ -505,6 +488,15 @@ def _interactive_reports(context: Any, renderer: TerminalRenderer) -> None:
         if choice == "1":
             _handle_reports(SimpleNamespace(reports_command="list"), context, renderer)
         elif choice == "2":
+            renderer.print_panel(
+                "Novo relatorio manual",
+                [
+                    "Titulo: nome que aparecera no relatorio.",
+                    "Dados JSON: informe campos entre chaves; Enter usa um objeto vazio.",
+                    'Exemplo: {"status":"ok","observacao":"ambiente local"}',
+                ],
+                style="cyan",
+            )
             title = input("Titulo [Relatorio manual]: ").strip() or "Relatorio manual"
             raw_data = input("Dados JSON [{}]: ").strip() or "{}"
             try:
@@ -554,6 +546,14 @@ def _interactive_cleanup(context: Any, renderer: TerminalRenderer) -> None:
 
 
 def _interactive_settings(context: Any, renderer: TerminalRenderer) -> None:
+    renderer.print_panel(
+        "Configuracoes e instalacao",
+        [
+            "Consulte as configuracoes atuais, verifique dependencias ou abra o instalador assistido.",
+            "Nenhuma ferramenta externa e instalada sem uma confirmacao explicita.",
+        ],
+        style="cyan",
+    )
     while True:
         print(
             renderer.panel(
@@ -633,21 +633,26 @@ def _run_assisted_setup(
 
 def _interactive_nmap(context: Any, renderer: TerminalRenderer) -> None:
     renderer.print_panel(
-        "Analise com Nmap",
+        "Analise de rede autorizada",
         [
-            "Ferramenta para reconhecimento de rede autorizado.",
-            "Perfis: rapida, servicos, scripts-padrao, servicos-scripts, portas, custom.",
-            "A execucao exige confirmacao de autorizacao.",
+            "Informe somente um ativo, uma rede privada ou um laboratorio sob sua autorizacao.",
+            "Alvo aceito: IP (192.168.1.10), hostname (servidor.interno) ou CIDR privado (192.168.1.0/24).",
+            "Perfis: rapida, servicos, scripts-padrao, servicos-scripts, portas e custom.",
+            "Sem Nmap instalado, a simulacao gera dados identificados como ficticios.",
         ],
         style="cyan",
     )
-    target = input("Alvo autorizado: ").strip()
+    target = _required_input(
+        "Alvo autorizado (IP, hostname ou CIDR privado): ",
+        "O alvo e obrigatorio. Informe o endereco do ativo autorizado.",
+    )
     profile = input("Perfil [servicos-scripts]: ").strip() or "servicos-scripts"
-    ports = input("Portas (apenas para perfil portas/custom, opcional): ").strip() or None
+    ports = input("Portas para perfil portas/custom (ex.: 22,80,443; Enter ignora): ").strip() or None
     authorization = input("Confirmo que tenho autorizacao? [sim/nao]: ").strip()
     extra = "nao"
     if profile.lower() in {"custom", "personalizado"}:
         extra = input("Confirmacao extra para perfil personalizado? [sim/nao]: ").strip()
+    simulate = input("Simular se Nmap estiver ausente? [sim]: ").strip() or "sim"
     result = context.module_manager.execute(
         "nmap_scan",
         ModuleExecutionContext(
@@ -658,6 +663,7 @@ def _interactive_nmap(context: Any, renderer: TerminalRenderer) -> None:
                 "ports": ports,
                 "authorized": authorization,
                 "extra_confirmed": extra,
+                "simulate": simulate,
             },
         ),
     )
@@ -666,21 +672,27 @@ def _interactive_nmap(context: Any, renderer: TerminalRenderer) -> None:
 
 def _interactive_nuclei(context: Any, renderer: TerminalRenderer) -> None:
     renderer.print_panel(
-        "Analise com Nuclei",
+        "Auditoria web autorizada",
         [
-            "Ferramenta para auditoria web autorizada com templates controlados.",
+            "Informe somente URL ou hostname de aplicacao web que voce esta autorizado a auditar.",
+            "Alvo aceito: https://app.interna, http://127.0.0.1 ou portal.interno.",
             "Perfis: basic, medium-high, high, critical, template, custom.",
             "Perfis high/critical/template/custom exigem confirmacao extra.",
+            "Sem Nuclei instalado, a simulacao gera dados identificados como ficticios.",
         ],
         style="cyan",
     )
-    targets = input("Alvo(s) autorizados separados por virgula: ").strip()
+    targets = _required_input(
+        "Alvo(s) web autorizados, separados por virgula: ",
+        "Informe pelo menos uma URL ou hostname autorizado.",
+    )
     profile = input("Perfil [basic]: ").strip() or "basic"
-    templates = input("Templates customizados separados por virgula (opcional): ").strip()
+    templates = input("Templates para perfil template/custom (opcional): ").strip()
     authorization = input("Confirmo que tenho autorizacao? [sim/nao]: ").strip()
     extra = "nao"
     if profile.lower() in {"high", "alta", "critical", "critica", "template", "template-especifico", "custom", "personalizado"}:
         extra = input("Confirmacao extra para perfil avancado/personalizado? [sim/nao]: ").strip()
+    simulate = input("Simular se Nuclei estiver ausente? [sim]: ").strip() or "sim"
     result = context.module_manager.execute(
         "nuclei_scan",
         ModuleExecutionContext(
@@ -691,6 +703,7 @@ def _interactive_nuclei(context: Any, renderer: TerminalRenderer) -> None:
                 "templates": templates,
                 "authorized": authorization,
                 "extra_confirmed": extra,
+                "simulate": simulate,
             },
         ),
     )
@@ -702,19 +715,24 @@ def _interactive_smart(context: Any, renderer: TerminalRenderer) -> None:
     renderer.print_panel(
         "SMART SCAN",
         [
-            "Correlaciona reconhecimento Nmap com auditoria Nuclei em endpoints web autorizados.",
+            "Executa Nmap no ativo autorizado e usa Nuclei apenas em endpoints web encontrados.",
+            "Alvo aceito: IP, hostname ou CIDR privado. Exemplos: 127.0.0.1, servidor.interno, 192.168.1.0/24.",
             "Perfis: basic, intermediate, advanced e custom.",
             "Perfis advanced/custom exigem confirmacao extra.",
+            "A simulacao mantem o fluxo demonstravel quando Nmap ou Nuclei nao estiverem instalados.",
         ],
         style="green",
     )
-    targets = input("Alvo(s) autorizados separados por virgula: ").strip()
+    targets = _required_input(
+        "Alvo(s) autorizados, separados por virgula: ",
+        "Informe pelo menos um ativo autorizado.",
+    )
     profile = input("Perfil [basic]: ").strip() or "basic"
     authorization = input("Confirmo que tenho autorizacao? [sim/nao]: ").strip()
     extra = "nao"
     if profile.lower() in {"advanced", "avancado", "custom", "personalizado"}:
         extra = input("Confirmacao extra para perfil avancado/personalizado? [sim/nao]: ").strip()
-    simulate = input("Simular se Nmap/Nuclei estiverem ausentes? [sim/nao]: ").strip()
+    simulate = input("Simular se Nmap/Nuclei estiverem ausentes? [sim]: ").strip() or "sim"
     result = context.module_manager.execute(
         "smart_scan",
         ModuleExecutionContext(
@@ -736,17 +754,22 @@ def _interactive_inventory(context: Any, renderer: TerminalRenderer) -> None:
         "ASSET INVENTORY",
         [
             "Normaliza inventarios fornecidos pelo operador.",
-            "Informe um arquivo JSON local ou uma lista de ativos separados por virgula.",
+            "Informe um arquivo JSON local ou uma lista de IPs, hostnames ou nomes de ativos separados por virgula.",
+            'Exemplo manual: 192.168.1.10, servidor.interno, notebook-lab.',
+            'Exemplo de arquivo: {"assets":[{"name":"servidor","address":"192.168.1.10"}]}.',
             "Nenhuma coleta externa e executada por este modulo.",
         ],
         style="green",
     )
-    input_file = input("Arquivo JSON (Enter para informar manualmente): ").strip()
+    input_file = input("Arquivo JSON local (Enter para informar ativos manualmente): ").strip()
     parameters: dict[str, Any]
     if input_file:
         parameters = {"input_file": input_file, "source": "interactive-file"}
     else:
-        assets = input("Ativos separados por virgula: ").strip()
+        assets = _required_input(
+            "Ativos separados por virgula: ",
+            "Informe ao menos um ativo ou volte para informar um arquivo JSON valido.",
+        )
         parameters = {"assets": assets, "source": "interactive-manual"}
     result = context.module_manager.execute(
         "asset_inventory",
@@ -756,6 +779,14 @@ def _interactive_inventory(context: Any, renderer: TerminalRenderer) -> None:
 
 
 def _interactive_system_health(context: Any, renderer: TerminalRenderer) -> None:
+    renderer.print_panel(
+        "Diagnostico local do sistema",
+        [
+            "Coleta versao do Python, sistema operacional, uso de recursos e estado da aplicacao local.",
+            "Nao acessa redes externas, nao altera configuracoes e nao exige nenhum dado de entrada.",
+        ],
+        style="green",
+    )
     result = context.module_manager.execute(
         "system_health",
         ModuleExecutionContext(application=context, parameters={}),
@@ -764,6 +795,14 @@ def _interactive_system_health(context: Any, renderer: TerminalRenderer) -> None
 
 
 def _interactive_project_summary(context: Any, renderer: TerminalRenderer) -> None:
+    renderer.print_panel(
+        "Resumo de projetos",
+        [
+            "Use Enter para um resumo de todos os projetos ou informe um ID existente para ver um unico projeto.",
+            "Para encontrar IDs, volte ao menu e use o atalho 'p' ou 'projects'.",
+        ],
+        style="cyan",
+    )
     project_id = input("ID do projeto (Enter para resumo geral): ").strip() or None
     result = context.module_manager.execute(
         "project_summary",

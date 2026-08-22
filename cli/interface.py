@@ -10,7 +10,7 @@ from typing import Any
 
 from cli.messages import colorize, info
 from cli.tables import format_table
-from core.constants import APP_AUTHOR, APP_NAME, APP_VERSION
+from core.constants import APP_NAME, APP_VERSION
 from services.scanner_service import ETHICAL_NOTICE
 
 try:  # pragma: no cover - depends on terminal/runtime.
@@ -38,40 +38,32 @@ class TerminalRenderer:
         )
 
     def banner(self) -> str:
-        return self.panel(
-            "DATASPECTRE // TERMINAL",
+        return "\n".join(
             [
-                *self.logo().splitlines(),
-                f"{APP_NAME}  v{APP_VERSION}",
-                "OSINT | DEFESA | INTELIGENCIA | AUDITORIA AUTORIZADA",
-                f"Operador: {APP_AUTHOR}",
-                "Comando rapido: dataspectre help",
-            ],
+                self.logo(),
+                f"[ {APP_NAME} // v{APP_VERSION} ]",
+                "[ COMANDO: dataspectre help ]",
+            ]
         )
 
     def print_banner(self) -> None:
         print(colorize(self.banner(), "green"))
 
     def logo(self) -> str:
-        """ASCII mark inspired by the visual identity, optimized for terminal rendering."""
+        """Render the compact dotted DataSpectre shield for text terminals."""
         if self.width < 56:
-            return "[ DATASPECTRE ]\nSIGNAL // TRACE // ANALYZE"
+            return " .:#:.\n[ DATASPECTRE ]"
         return (
-            "                         /\\\n"
-            "                    ____/##\\____\n"
-            "                 __/  /####\\  \\__\n"
-            "               _/____/######\\____\\_\n"
-            "              /     /########\\     \\\n"
-            "             /_____/###/  \\###\\_____\\\n"
-            "                 /###/ /\\ \\###\\\n"
-            "                /###/ /  \\ \\###\\\n"
-            "               /###/  |<>|  \\###\\\n"
-            "               \\###\\  \\__/  /###/\n"
-            "                \\###\\______/###/\n"
-            "                 \\############/\n"
-            "                  \\__________/\n"
-            "                 [ DATASPECTRE ]\n"
-            "            < SIGNAL // TRACE // ANALYZE >"
+            "          .:^^^^:.\n"
+            "      .:'##/\\##':.\n"
+            "   .:'##/....\\##':.\n"
+            "  |#  / .--. \\  #|\n"
+            "  |# | <o>   | #|\n"
+            "  |# | /__\\  | #|\n"
+            "   \\# \\::::/ #/\n"
+            "    \\# '::' #/\n"
+            "     \\#____#/\n"
+            "      \\____/"
         )
 
     def print_json(self, payload: Any) -> None:
@@ -85,41 +77,52 @@ class TerminalRenderer:
 
     def print_dashboard(self, status: dict[str, Any]) -> None:
         health = status.get("health", {})
-        self.print_banner()
-        self.print_panel(
-            "USO AUTORIZADO",
-            [ETHICAL_NOTICE],
-            style="red",
-        )
-        self.print_panel(
-            "SYSTEM STATUS",
-            [
-                f"Modules: {status['modules']} | Plugins: {status['plugins']} | Projects: {status['projects']}",
-                f"Boot: {self.progress_bar(1, 1)}",
-            ],
-            style="green",
-        )
-        print(f"Root: {status['root_path']}")
-        metrics = [
-            {"metric": "Aplicacao", "value": status["application"]},
-            {"metric": "Versao", "value": status["version"]},
-            {"metric": "Modulos", "value": status["modules"]},
-            {"metric": "Plugins", "value": status["plugins"]},
-            {"metric": "Projetos", "value": status["projects"]},
+        print(colorize(self.dashboard_banner(status), "cyan"))
+        notice = "USO AUTORIZADO // " + ETHICAL_NOTICE
+        print(colorize("\n".join(textwrap.wrap(notice, width=self.width)), "red"))
+        runtime_details = [
+            ("PATH", status["root_path"]),
+            ("USUARIO", health.get("user", "-")),
+            ("CPU", health.get("cpu_count", "-")),
+            ("RAM MB", health.get("memory_total_mb", "-")),
+            ("UPTIME", f"{health.get('uptime_seconds', 0)}s"),
         ]
-        if health:
-            metrics.extend(
-                [
-                    {"metric": "Uptime", "value": f"{health.get('uptime_seconds')}s"},
-                    {"metric": "Python", "value": health.get("python_version")},
-                    {"metric": "Usuario", "value": health.get("user")},
-                    {"metric": "Sistema", "value": health.get("os")},
-                    {"metric": "IP local", "value": health.get("local_ip")},
-                    {"metric": "CPU", "value": health.get("cpu_count")},
-                    {"metric": "RAM MB", "value": health.get("memory_total_mb")},
-                ]
-            )
-        self.print_table(metrics, ["metric", "value"])
+        print(colorize(self.metric_badges(runtime_details), "blue"))
+
+    def dashboard_banner(self, status: dict[str, Any]) -> str:
+        """Build the compact option-two dashboard header with inline metrics."""
+        health = status.get("health", {})
+        summary = [
+            ("SISTEMA", health.get("os", "-")),
+            ("PYTHON", health.get("python_version", "-")),
+            ("MODULOS", status["modules"]),
+            ("PLUGINS", status["plugins"]),
+            ("PROJETOS", status["projects"]),
+            ("IP LOCAL", health.get("local_ip", "-")),
+        ]
+        return "\n".join(
+            [
+                self.logo(),
+                f"[ {APP_NAME} // v{APP_VERSION} ]",
+                self.metric_badges(summary),
+            ]
+        )
+
+    def metric_badges(self, metrics: list[tuple[str, Any]]) -> str:
+        """Keep dashboard facts small and side-by-side whenever the terminal allows it."""
+        badges = [f"[ {label}: {value if value not in (None, '') else '-'} ]" for label, value in metrics]
+        rows: list[str] = []
+        current = ""
+        for badge in badges:
+            candidate = badge if not current else f"{current} {badge}"
+            if current and len(candidate) > self.width:
+                rows.append(current)
+                current = badge
+            else:
+                current = candidate
+        if current:
+            rows.append(current)
+        return "\n".join(rows)
 
     def print_help(self) -> None:
         print(

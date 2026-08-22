@@ -75,6 +75,24 @@ def test_terminal_renderer_modules_empty_message(capsys):
     assert "Nenhum modulo carregado" in captured.out
 
 
+def test_dashboard_banner_uses_dotted_logo_and_inline_metrics():
+    renderer = TerminalRenderer(width=118)
+    banner = renderer.dashboard_banner(
+        {
+            "application": "DataSpectre CLI",
+            "version": "2.0.2",
+            "modules": 6,
+            "plugins": 1,
+            "projects": 0,
+            "health": {"os": "Linux", "python_version": "3.13", "local_ip": "10.0.2.15"},
+        }
+    )
+
+    assert ".:'##/" in banner
+    assert "[ SISTEMA: Linux ] [ PYTHON: 3.13 ]" in banner
+    assert "[ MODULOS: 6 ] [ PLUGINS: 1 ] [ PROJETOS: 0 ] [ IP LOCAL: 10.0.2.15 ]" in banner
+
+
 def test_history_service_records_result_error_and_function(tmp_path):
     service = HistoryService(tmp_path / "history")
 

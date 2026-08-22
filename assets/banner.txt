@@ -1,2 +1,2 @@
 DATASPECTRE // TERMINAL
-OSINT, defensive intelligence and authorized security auditing workflows.
+Defensive intelligence and authorized security auditing workflows.

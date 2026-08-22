@@ -23,7 +23,8 @@ def test_cli_status_initializes_application(runtime_root, capsys):
 
     assert exit_code == 0
     assert "DataSpectre CLI" in captured.out
-    assert "Modules:" in captured.out
+    assert "MODULOS:" in captured.out
+    assert "SISTEMA:" in captured.out
 
 
 def test_cli_config_show_get_set_and_reset(runtime_root, capsys):
@@ -448,7 +449,7 @@ def test_cli_uses_environment_root(runtime_root, capsys, monkeypatch):
 
 def test_cli_interactive_smoke_covers_menu_paths(runtime_root, capsys, monkeypatch):
     # modules, help, cleanup preview/cancel, invalid option, exit
-    choices = iter(["11", "12", "13", "nao", "x", "0"])
+    choices = iter(["10", "11", "12", "nao", "x", "0"])
     monkeypatch.setattr("builtins.input", lambda _: next(choices))
 
     exit_code = main(["--root", str(runtime_root), "interactive"])
@@ -462,24 +463,40 @@ def test_cli_interactive_smoke_covers_menu_paths(runtime_root, capsys, monkeypat
     assert "asset_inventory" in captured.out
     assert "nmap_scan" in captured.out
     assert "nuclei_scan" in captured.out
-    assert "SYSTEM STATUS" in captured.out
+    assert "SISTEMA:" in captured.out
 
 
-def test_cli_interactive_osint_guidance_opens_cleanly(runtime_root, capsys, monkeypatch):
-    choices = iter(["8", "0"])
+def test_cli_interactive_menu_hides_removed_osint_workflow(runtime_root, capsys, monkeypatch):
+    choices = iter(["0"])
     monkeypatch.setattr("builtins.input", lambda _: next(choices))
 
     exit_code = main(["--root", str(runtime_root), "interactive"])
     captured = capsys.readouterr()
 
     assert exit_code == 0
-    assert "OSINT Tecnico" in captured.out
-    assert "Fluxo passivo" in captured.out
+    assert "OSINT" not in captured.out
+    assert "Historico de operacoes" in captured.out
     assert "SESSION // FINAL REPORT" in captured.out
 
 
+def test_cli_interactive_nmap_explains_authorized_target_and_simulates(runtime_root, capsys, monkeypatch):
+    choices = iter(["1", "127.0.0.1", "", "", "sim", "", "0"])
+    monkeypatch.setattr("builtins.input", lambda _: next(choices))
+    monkeypatch.setattr(
+        "services.scanner_service.ScannerService.is_installed",
+        lambda self, binary: False,
+    )
+
+    exit_code = main(["--root", str(runtime_root), "interactive"])
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "Alvo aceito: IP" in captured.out
+    assert "Status: simulated" in captured.out
+
+
 def test_cli_interactive_settings_submenu_can_return(runtime_root, capsys, monkeypatch):
-    choices = iter(["10", "1", "0", "0"])
+    choices = iter(["9", "1", "0", "0"])
     monkeypatch.setattr("builtins.input", lambda _: next(choices))
 
     exit_code = main(["--root", str(runtime_root), "interactive"])
@@ -491,7 +508,7 @@ def test_cli_interactive_settings_submenu_can_return(runtime_root, capsys, monke
 
 
 def test_cli_interactive_settings_environment_check(runtime_root, capsys, monkeypatch):
-    choices = iter(["10", "2", "0", "0"])
+    choices = iter(["9", "2", "0", "0"])
     monkeypatch.setattr("builtins.input", lambda _: next(choices))
 
     exit_code = main(["--root", str(runtime_root), "interactive"])
@@ -510,7 +527,7 @@ def test_cli_interactive_report_center_lists_and_returns(runtime_root, capsys, m
     captured = capsys.readouterr()
 
     assert exit_code == 0
-    assert "Report Center" in captured.out
+    assert "Central de relatorios" in captured.out
     assert '"format": "json"' in captured.out
 
 

@@ -2,6 +2,20 @@
 
 Todas as mudancas relevantes do DataSpectre CLI serao registradas neste arquivo.
 
+## [2.0.2] - 2026-08-22
+
+### Melhorado
+
+- Cabeçalho do terminal redesenhado com emblema DataSpectre pontilhado e indicadores compactos.
+- Indicadores de sistema, Python, módulos, plugins, projetos e IP local agora aparecem em blocos alinhados.
+- Todas as opções interativas agora explicam o objetivo, os dados esperados e exemplos antes da execução.
+- Nmap, Nuclei e Smart Scan oferecem simulação identificada quando a ferramenta externa não está instalada.
+
+### Alterado
+
+- Removido o fluxo de OSINT do menu e das informações públicas do pacote.
+- Menu interativo reorganizado em português, preservando somente as funções disponíveis.
+
 ## [2.0.1] - 2026-08-22
 
 ### Melhorado
