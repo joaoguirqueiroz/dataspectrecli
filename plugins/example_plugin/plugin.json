@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "entrypoint": "plugin.py",
+  "class_name": "PLUGIN_CLASS",
+  "metadata": {
+    "id": "example_plugin",
+    "name": "Example Plugin",
+    "version": "1.0.0",
+    "author": "DataSpectre",
+    "description": "Reference plugin demonstrating the extension lifecycle.",
+    "category": "reference",
+    "min_app_version": "1.0.0",
+    "dependencies": [],
+    "components": ["lifecycle-demo"]
+  }
+}
+

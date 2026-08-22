@@ -1,0 +1,17 @@
+{
+  "assets": [
+    {
+      "name": "lab-gateway",
+      "address": "192.0.2.10",
+      "type": "network",
+      "tags": ["lab", "authorized"]
+    },
+    {
+      "name": "training-web",
+      "address": "192.0.2.20",
+      "type": "host",
+      "tags": ["training"]
+    }
+  ]
+}
+

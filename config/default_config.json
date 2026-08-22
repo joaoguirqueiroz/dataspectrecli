@@ -1,0 +1,102 @@
+{
+  "app": {
+    "language": "pt-BR",
+    "timezone": "America/Fortaleza"
+  },
+  "ui": {
+    "theme": "dark",
+    "table_style": "compact",
+    "progress": true,
+    "notifications": true
+  },
+  "paths": {
+    "workdir": "data/projects",
+    "reports": "reports",
+    "logs": "logs",
+    "cache": "cache",
+    "backups": "backups"
+  },
+  "logging": {
+    "level": "INFO",
+    "max_bytes": 1048576,
+    "backup_count": 5,
+    "retention_days": 30
+  },
+  "reports": {
+    "default_format": "markdown",
+    "template": "technical"
+  },
+  "security": {
+    "active_profile": "administrator"
+  },
+  "performance": {
+    "max_tasks": 4,
+    "cache_enabled": true
+  },
+  "scanners": {
+    "defaults": {
+      "profile": "basic",
+      "timeout": 60,
+      "concurrency": 5,
+      "rate_limit": 25,
+      "max_targets": 25
+    },
+    "smart": {
+      "default_profile": "basic",
+      "large_target_threshold": 10,
+      "web_ports": [
+        80,
+        443,
+        8080,
+        8443
+      ]
+    },
+    "nmap": {
+      "default_profile": "basic",
+      "allowed_nse_profiles": [
+        "default-safe",
+        "discovery",
+        "version",
+        "safe",
+        "custom-authorized"
+      ],
+      "allowed_nse_scripts": [
+        "default",
+        "discovery",
+        "version",
+        "safe",
+        "http-title",
+        "http-headers"
+      ]
+    },
+    "nuclei": {
+      "default_profile": "basic",
+      "severities": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "tags": [
+        "tech",
+        "exposure",
+        "misconfig"
+      ],
+      "templates": [],
+      "template_dirs": []
+    }
+  },
+  "baseline": {
+    "enabled": true,
+    "alert_new_open_ports": true,
+    "alert_new_high_findings": true
+  },
+  "alerts": {
+    "terminal": true,
+    "report": true,
+    "history": true
+  },
+  "modules": {},
+  "plugins": {}
+}
